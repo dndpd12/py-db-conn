@@ -1,7 +1,47 @@
 from .db_config_loader import get_batch_size
 import xml.etree.ElementTree as ET
 import csv
+import pandas as pd
 
+
+def insert_xlsx_to_db(xlsx_path, insert_query, db_conn):
+    batch_size = get_batch_size()
+    total = 0
+
+    df = pd.read_excel(xlsx_path)
+
+    # null 처리
+    def nullify_empty(value):
+        return value if pd.notnull(value) and str(value).strip() != '' else None
+
+    # float -> text로 바꾸는 로직
+    def normalize_id(val):
+        if val is None:
+            return None
+        try:
+            f = float(val)
+            i = int(f)
+            return str(i)
+        except (ValueError, TypeError):
+            return str(val).strip()
+
+    # 헤더 스킵, 각 row에 대해 null/normalize 처리
+    rows = [
+        tuple(nullify_empty(normalize_id(col)) for col in row)
+        for row in df.values
+    ]
+
+    with db_conn.cursor() as cursor:
+        try:
+            for i in range(0, len(rows), batch_size):
+                batch = rows[i:i + batch_size]
+                cursor.executemany(insert_query, batch)
+                total += len(batch)
+                print(f"✅ {total} rows inserted from XLSX.")
+            db_conn.commit()
+        except Exception as e:
+            db_conn.rollback()
+            print(f"\033[91mX 예외 발생 Rollback \033[0m ", e)
 
 # CSV → DB INSERT (헤더 제외)
 

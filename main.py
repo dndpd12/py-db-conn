@@ -1,5 +1,5 @@
 from common.db_connection import get_connection, close_connections
-from common.module import insert_db, insert_csv_to_db
+from common.module import insert_db, insert_csv_to_db, insert_xlsx_to_db
 
 
 def main():
@@ -24,7 +24,10 @@ def main():
           # 2번은 select, insert query 사용함
 
           # 1. CSV → INSERT (헤더 스킵)
-        insert_csv_to_db('data.csv', insert_query, insert_conn)
+        #insert_csv_to_db('data.csv', insert_query, insert_conn)
+
+        # 1-2. XLSX → INSERT (헤더 스킵)
+        insert_xlsx_to_db('data.xlsx', insert_query, insert_conn)
 
           # 2. DB INSERT
           # insert_db(select_conn, insert_conn, select_query, insert_query)
