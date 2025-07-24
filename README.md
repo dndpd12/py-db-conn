@@ -37,3 +37,23 @@ pip download -r requirements.txt -d ./packages
 
 # 폐쇄망 환경
 pip install --no-index --find-links=./packages -r requirements.txt
+
+
+alias python=python3 ~/.zshrc   
+alias pip=pip3 ~/.zshrc   
+
+shiftt + commnad +p
+
+python -m pip install pymysql
+python3 -m pip install psycopg2-binary
+
+pip3 install pandas openpyxl
+
+
+
+— 지금 현재 library 형태로 requirements 파일 만들기
+python -m pip freeze > requirements.txt
+
+
+
+uvicorn server:app --reload --host 0.0.0.0 --port 8000
